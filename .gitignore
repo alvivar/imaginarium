@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Generated images
+output.*
+*.jpg
+*.jpeg
+*.png
+*.webp
+
+# Local editor/session state
+.vscode/
