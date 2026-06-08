@@ -3,8 +3,9 @@
 
 import argparse
 import sys
+from contextlib import ExitStack
 from pathlib import Path
-from typing import Callable, Protocol, cast
+from typing import IO, Callable, Protocol, cast
 
 import replicate
 
@@ -112,20 +113,28 @@ def parse_args() -> argparse.Namespace:
         help="Max images when --sequential is set, 1-15 (default: 1).",
     )
     parser.add_argument(
-        "--disable-safety-checker",
+        "--safety-checker",
         action="store_true",
-        help="Relax input moderation to only block illegal content. Use responsibly.",
+        help="Enable the safety checker (off by default).",
     )
     return parser.parse_args()
 
 
-def build_input(args: argparse.Namespace) -> dict[str, object]:
+def resolve_image(value: str, stack: ExitStack) -> str | IO[bytes]:
+    """Open local paths as binary files for upload; pass URLs through unchanged."""
+    path = Path(value)
+    if path.is_file():
+        return stack.enter_context(path.open("rb"))
+    return value
+
+
+def build_input(args: argparse.Namespace, image_input: list) -> dict[str, object]:
     """Assemble the model input, including only fields relevant to the chosen size."""
     payload: dict[str, object] = {
         "prompt": args.prompt,
         "size": args.size,
-        "image_input": args.image_input,
-        "disable_safety_checker": args.disable_safety_checker,
+        "image_input": image_input,
+        "disable_safety_checker": not args.safety_checker,
         "sequential_image_generation": "auto" if args.sequential else "disabled",
         "max_images": args.max_images,
     }
@@ -148,7 +157,10 @@ def main() -> int:
     """Run the command-line interface."""
     args = parse_args()
 
-    output = cast("list[Readable]", replicate.run(MODEL, input=build_input(args)))
+    with ExitStack() as stack:
+        images = [resolve_image(value, stack) for value in args.image_input]
+        payload = build_input(args, images)
+        output = cast("list[Readable]", replicate.run(MODEL, input=payload))
     if not output:
         raise RuntimeError("Replicate returned no generated images.")
 
