@@ -6,7 +6,7 @@ import sys
 from contextlib import ExitStack
 from datetime import datetime
 from pathlib import Path
-from typing import IO, Callable, Protocol, cast
+from typing import IO, Callable, Protocol, TypeVar, cast
 
 import replicate
 
@@ -27,12 +27,13 @@ class Readable(Protocol):
         ...
 
 
-def bounded(
-    convert: Callable[[str], float], low: float, high: float
-) -> Callable[[str], float]:
+N = TypeVar("N", int, float)
+
+
+def bounded(convert: Callable[[str], N], low: N, high: N) -> Callable[[str], N]:
     """Build an argparse type that parses a number within [low, high]."""
 
-    def parse(value: str) -> float:
+    def parse(value: str) -> N:
         number = convert(value)
         if not low <= number <= high:
             raise argparse.ArgumentTypeError(f"must be between {low} and {high}")
@@ -66,7 +67,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--factor",
         type=bounded(float, 1, 8),
-        default=2,
+        default=2.0,
         help="Per-side scaling factor, 1-8, used with --mode factor (default: 2).",
     )
     parser.add_argument(
@@ -115,11 +116,12 @@ def build_input(args: argparse.Namespace, image: ImageInput) -> dict[str, object
         "image": image,
         "upscale_mode": args.mode,
         "output_format": args.format,
-        "output_quality": args.quality,
         "enhance_details": args.enhance_details,
         "enhance_realism": args.enhance_realism,
         "disable_safety_checker": not args.safety_checker,
     }
+    if args.format != "png":
+        payload["output_quality"] = args.quality
     if args.mode == "target":
         payload["target"] = args.target
     else:
@@ -138,6 +140,8 @@ def main() -> int:
     with ExitStack() as stack:
         payload = build_input(args, resolve_image(args.image, stack))
         output = cast("Readable", replicate.run(MODEL, input=payload))
+    if output is None:
+        raise RuntimeError("Replicate returned no upscaled image.")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(output.read())
