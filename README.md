@@ -54,12 +54,14 @@ python upscale.py input.jpg
 python upscale.py https://example.com/photo.jpg --mode factor --factor 4
 ```
 
-By default the result is written to `<timestamp>.<format>`. Pass `-o NAME`
+By default the result is written next to a name derived from the input,
+`<input-stem>_upscaled_<timestamp>.<format>`
+(e.g. `photo.jpg` → `photo_upscaled_2026-06-08_13-07-57.jpg`). Pass `-o NAME`
 to choose the name.
 
 Optional flags:
 
-- `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.<format>`)
+- `-o`, `--output` — output path (default: `<input-stem>_upscaled_<YYYY-MM-DD_HH-MM-SS>.<format>`)
 - `--mode` — `target` (scale to a megapixel resolution) or `factor` (multiply each side) (default: `target`)
 - `--target` — target megapixels, 1–128, used with `--mode target` (default: `4`)
 - `--factor` — per-side scaling factor, 1–8, used with `--mode factor` (default: `2`)

@@ -7,6 +7,7 @@ from contextlib import ExitStack
 from datetime import datetime
 from pathlib import Path
 from typing import IO, Callable, Protocol, TypeVar, cast
+from urllib.parse import urlsplit
 
 import replicate
 
@@ -129,13 +130,22 @@ def build_input(args: argparse.Namespace, image: ImageInput) -> dict[str, object
     return payload
 
 
+def default_output(image: str, output_format: str) -> Path:
+    """Derive '<input-stem>_upscaled_<timestamp>.<format>' from the input path or URL."""
+    source = (
+        urlsplit(image).path if image.startswith(("http://", "https://")) else image
+    )
+    stem = Path(source).stem
+    prefix = f"{stem}_upscaled" if stem else "upscaled"
+    timestamp = datetime.now().strftime(TIMESTAMP_FORMAT)
+    return Path(f"{prefix}_{timestamp}.{output_format}")
+
+
 def main() -> int:
     """Run the command-line interface."""
     args = parse_args()
     if args.output is None:
-        args.output = Path(
-            datetime.now().strftime(TIMESTAMP_FORMAT) + "." + args.format
-        )
+        args.output = default_output(args.image, args.format)
 
     with ExitStack() as stack:
         payload = build_input(args, resolve_image(args.image, stack))
