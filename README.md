@@ -1,8 +1,7 @@
 # Imaginator
 
-A small collection of command-line tools for generating images with
-[Replicate](https://replicate.com) models. Each model gets its own
-self-contained script named after it; `seedream.py` is the first.
+A small collection of command-line tools for generating and upscaling images
+with [Replicate](https://replicate.com) models.
 
 ## Setup
 
@@ -37,7 +36,7 @@ Optional flags:
 - `--size` — `2K`, `4K`, or `custom` (default: `2K`)
 - `--aspect-ratio` — e.g. `1:1`, `16:9` (default: `match_input_image`; ignored with `--size custom`)
 - `--width` / `--height` — 1024–4096, used only with `--size custom` (default: `2048`)
-- `--image URI` — input image for image-to-image; a local path or URL, repeatable (1–14)
+- `--image URI` — input image for image-to-image; a local path or URL, repeatable up to 14 times
 - `--sequential` — let the model generate multiple related images
 - `--max-images` — 1–15, used with `--sequential` (default: `1`)
 - `--safety-checker` — enable the safety checker (off by default)
@@ -54,8 +53,8 @@ python upscale.py input.jpg
 python upscale.py https://example.com/photo.jpg --mode factor --factor 4
 ```
 
-By default the result is written next to a name derived from the input,
-`<input-stem>_upscaled_<timestamp>.<format>`
+By default the result is written to `<input-stem>_upscaled_<timestamp>.<format>`
+in the current directory
 (e.g. `photo.jpg` → `photo_upscaled_2026-06-08_13-07-57.jpg`). Pass `-o NAME`
 to choose the name.
 
