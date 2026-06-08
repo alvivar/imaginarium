@@ -4,13 +4,14 @@
 import argparse
 import sys
 from contextlib import ExitStack
+from datetime import datetime
 from pathlib import Path
 from typing import IO, Callable, Protocol, cast
 
 import replicate
 
 MODEL = "bytedance/seedream-4.5"
-DEFAULT_OUTPUT = "output.jpg"
+TIMESTAMP_FORMAT = "%Y-%m-%d_%H-%M-%S"
 
 ImageInput = str | IO[bytes]
 
@@ -69,9 +70,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-o",
         "--output",
-        default=Path(DEFAULT_OUTPUT),
         type=Path,
-        help=f"Output file path; indexed when multiple (default: {DEFAULT_OUTPUT}).",
+        help="Output file path; indexed when multiple (default: <timestamp>.jpg).",
     )
     parser.add_argument(
         "--size",
@@ -168,6 +168,8 @@ def output_paths(base: Path, count: int) -> list[Path]:
 def main() -> int:
     """Run the command-line interface."""
     args = parse_args()
+    if args.output is None:
+        args.output = Path(datetime.now().strftime(TIMESTAMP_FORMAT) + ".jpg")
 
     with ExitStack() as stack:
         images = [resolve_image(value, stack) for value in args.image_input]
