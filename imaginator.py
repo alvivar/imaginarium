@@ -12,6 +12,8 @@ import replicate
 MODEL = "bytedance/seedream-4.5"
 DEFAULT_OUTPUT = "output.jpg"
 
+ImageInput = str | IO[bytes]
+
 SIZES = ("2K", "4K", "custom")
 ASPECT_RATIOS = (
     "match_input_image",
@@ -51,6 +53,8 @@ def bounded_int(low: int, high: int) -> Callable[[str], int]:
 
 def prompt_text(value: str) -> str:
     """Validate the prompt against the schema's 4000-character limit."""
+    if not value.strip():
+        raise argparse.ArgumentTypeError("must not be empty")
     if len(value) > 4000:
         raise argparse.ArgumentTypeError("must be at most 4000 characters")
     return value
@@ -117,18 +121,25 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable the safety checker (off by default).",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if len(args.image_input) > 14:
+        parser.error("--image may be given at most 14 times")
+    return args
 
 
-def resolve_image(value: str, stack: ExitStack) -> str | IO[bytes]:
+def resolve_image(value: str, stack: ExitStack) -> ImageInput:
     """Open local paths as binary files for upload; pass URLs through unchanged."""
-    path = Path(value)
+    path = Path(value).expanduser()
     if path.is_file():
         return stack.enter_context(path.open("rb"))
-    return value
+    if value.startswith(("http://", "https://")):
+        return value
+    raise SystemExit(f"error: image not found and not a URL: {value}")
 
 
-def build_input(args: argparse.Namespace, image_input: list) -> dict[str, object]:
+def build_input(
+    args: argparse.Namespace, image_input: list[ImageInput]
+) -> dict[str, object]:
     """Assemble the model input, including only fields relevant to the chosen size."""
     payload: dict[str, object] = {
         "prompt": args.prompt,
@@ -136,8 +147,9 @@ def build_input(args: argparse.Namespace, image_input: list) -> dict[str, object
         "image_input": image_input,
         "disable_safety_checker": not args.safety_checker,
         "sequential_image_generation": "auto" if args.sequential else "disabled",
-        "max_images": args.max_images,
     }
+    if args.sequential:
+        payload["max_images"] = args.max_images
     if args.size == "custom":
         payload["width"] = args.width
         payload["height"] = args.height
