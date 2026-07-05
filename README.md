@@ -101,3 +101,24 @@ Optional flags:
 Reference images/videos cannot be combined with `--image`/`--last-frame`, and
 reference audio requires at least one reference image or video. All media
 inputs may be local paths or URLs.
+
+### `grok.py`
+
+Animate an image into a video with `xai/grok-imagine-video-1.5`.
+
+```bash
+python grok.py "the waves roll and the clouds drift" seascape.jpg
+python grok.py "she turns and smiles" https://example.com/portrait.jpg --resolution 480p
+```
+
+By default the video is written to `<timestamp>.mp4` in the current directory.
+Pass `-o NAME.mp4` to choose the name.
+
+Optional flags:
+
+- `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.mp4`)
+- `--duration` — seconds, 1 to 15 (default: `5`)
+- `--resolution` — `720p` or `480p` (default: `720p`)
+- `--aspect-ratio` — `auto`, `16:9`, `4:3`, `1:1`, `9:16`, `3:4`, `3:2`, or `2:3`; `auto` uses the image's native ratio (default: `auto`)
+
+The input image may be a local path or a URL.
