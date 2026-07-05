@@ -55,14 +55,18 @@ def bounded_int(low: int, high: int) -> Callable[[str], int]:
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments mirroring the seedance-2.0 input schema."""
     parser = argparse.ArgumentParser(description="Generate a video from a text prompt.")
-    parser.add_argument("prompt", type=prompt_text, help="Text prompt (max 4000 characters).")
+    parser.add_argument(
+        "prompt", type=prompt_text, help="Text prompt (max 4000 characters)."
+    )
     parser.add_argument(
         "-o",
         "--output",
         type=Path,
         help="Output file path (default: <timestamp>.mp4).",
     )
-    parser.add_argument("--seed", type=int, help="Random seed for reproducible generation.")
+    parser.add_argument(
+        "--seed", type=int, help="Random seed for reproducible generation."
+    )
     parser.add_argument(
         "--image",
         help="First-frame image for image-to-video (local path or URL).",
@@ -122,7 +126,9 @@ def parse_args() -> argparse.Namespace:
     if (args.image or args.last_frame) and args.reference_image:
         parser.error("--image/--last-frame cannot be combined with --reference-image")
     if args.reference_audio and not (args.reference_image or args.reference_video):
-        parser.error("--reference-audio requires at least one --reference-image or --reference-video")
+        parser.error(
+            "--reference-audio requires at least one --reference-image or --reference-video"
+        )
     for values, limit, name in (
         (args.reference_image, MAX_REFERENCE_IMAGES, "--reference-image"),
         (args.reference_video, MAX_REFERENCE_VIDEOS, "--reference-video"),
@@ -187,7 +193,12 @@ def main() -> int:
         reference_videos = [resolve_media(v, stack) for v in args.reference_video]
         reference_audios = [resolve_media(v, stack) for v in args.reference_audio]
         payload = build_input(
-            args, image, last_frame, reference_images, reference_videos, reference_audios
+            args,
+            image,
+            last_frame,
+            reference_images,
+            reference_videos,
+            reference_audios,
         )
         output = cast("Readable", replicate.run(MODEL, input=payload))
     if output is None:

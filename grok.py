@@ -49,7 +49,9 @@ def bounded_int(low: int, high: int) -> Callable[[str], int]:
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments mirroring the grok-imagine-video-1.5 input schema."""
     parser = argparse.ArgumentParser(description="Animate an image into a video.")
-    parser.add_argument("prompt", type=prompt_text, help="Text prompt describing the motion or scene.")
+    parser.add_argument(
+        "prompt", type=prompt_text, help="Text prompt describing the motion or scene."
+    )
     parser.add_argument("image", help="Image to animate (local path or URL).")
     parser.add_argument(
         "-o",
@@ -107,6 +109,8 @@ def main() -> int:
 
     with ExitStack() as stack:
         payload = build_input(args, resolve_media(args.image, stack))
+        # Grok rejects Replicate's uploaded-file URLs (they resolve to JSON metadata),
+        # so send local files inline as base64 data URIs; remote URLs pass through unchanged.
         output = cast(
             "Readable",
             replicate.run(MODEL, input=payload, file_encoding_strategy="base64"),
