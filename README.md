@@ -135,6 +135,8 @@ python tts.py "[say excitedly] We shipped it!" --voice Dennis --format wav
 The text supports natural-language steering with bracketed instructions
 (e.g. `[whisper]`, `[say sadly]`), inline non-verbal tags (e.g. `[laugh]`,
 `[sigh]`), SSML `<break time="1s" />` pauses, and CAPITALS for emphasis.
+See [docs/tts-steering.md](docs/tts-steering.md) for the full guide to
+directing emotion, pacing, volume, and vocal style.
 
 By default the audio is written to `<timestamp>.<format>` in the current
 directory. Pass `-o NAME` to choose the name.
@@ -143,7 +145,7 @@ Optional flags:
 
 - `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.<format>`)
 - `--voice` — preset voice name or custom cloned voice ID (default: `Ashley`)
-- `--language` — `auto` or a language code such as `en`, `es`, `fr`, `ja` (default: `auto`)
+- `--language` — `auto` or one of `en`, `zh`, `ja`, `ko`, `ru`, `it`, `es`, `pt`, `fr`, `de`, `pl`, `nl`, `hi`, `he`, `ar` (default: `auto`)
 - `--sample-rate` — `8000`, `16000`, `22050`, `24000`, `32000`, `44100`, or `48000` Hz (default: `48000`)
 - `--temperature` — randomness 0–2; `0` uses the model default of 1.1 (default: `0`)
 - `--format` — `mp3`, `wav`, `ogg_opus`, or `flac` (default: `mp3`)

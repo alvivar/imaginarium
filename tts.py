@@ -12,15 +12,50 @@ import replicate
 MODEL = "inworld/realtime-tts-2"
 TIMESTAMP_FORMAT = "%Y-%m-%d_%H-%M-%S"
 
+# The Replicate endpoint accepts only these language codes (schema enum),
+# even though inworld-tts-2 natively supports 200+ via Inworld's own API.
 LANGUAGES = (
-    "auto", "en", "zh", "ja", "ko", "ru", "it", "es",
-    "pt", "fr", "de", "pl", "nl", "hi", "he", "ar",
+    "auto",
+    "en",
+    "zh",
+    "ja",
+    "ko",
+    "ru",
+    "it",
+    "es",
+    "pt",
+    "fr",
+    "de",
+    "pl",
+    "nl",
+    "hi",
+    "he",
+    "ar",
 )
 SAMPLE_RATES = (8000, 16000, 22050, 24000, 32000, 44100, 48000)
 TEXT_NORMALIZATION = ("auto", "on", "off")
 
 # Output file extension per audio format (ogg_opus lives in an .ogg container).
 EXTENSIONS = {"mp3": "mp3", "wav": "wav", "ogg_opus": "ogg", "flac": "flac"}
+
+# Steering cheat-sheet shown at the bottom of --help. See docs/tts-steering.md.
+STEERING_HELP = """\
+Steering: write instructions in English inside [brackets], before the words
+they affect. Fully supported on this model (inworld-tts-2).
+
+  emotion     [say excitedly]  [sound sad]  [sound terrified]
+  volume      [very quiet]  [very loud]
+  pitch       [say in a low tone]  [say in a high pitch]
+  speed       [very fast]  [very slow]
+  style       [whisper in a hushed style]  [sing joyfully]
+  non-verbal  [laugh] [sigh] [breathe] [clear throat] [cough] [yawn]  (inline)
+  emphasis    CAPITALIZE words to stress them
+  pause       <break time="1s" />  (SSML)
+
+Combine qualities in one tag for the most control:
+  [say sadly with deliberate pauses in a low voice and hushed style]
+
+See docs/tts-steering.md for the full guide."""
 
 
 class Readable(Protocol):
@@ -54,8 +89,14 @@ def bounded_float(low: float, high: float) -> Callable[[str], float]:
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments mirroring the realtime-tts-2 input schema."""
-    parser = argparse.ArgumentParser(description="Convert text to speech.")
-    parser.add_argument("text", type=speech_text, help="Text to speak (max 2000 characters).")
+    parser = argparse.ArgumentParser(
+        description="Convert text to speech.",
+        epilog=STEERING_HELP,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "text", type=speech_text, help="Text to speak (max 2000 characters)."
+    )
     parser.add_argument(
         "-o",
         "--output",
@@ -125,7 +166,9 @@ def main() -> int:
     """Run the command-line interface."""
     args = parse_args()
     if args.output is None:
-        args.output = Path(datetime.now().strftime(TIMESTAMP_FORMAT) + "." + EXTENSIONS[args.format])
+        args.output = Path(
+            datetime.now().strftime(TIMESTAMP_FORMAT) + "." + EXTENSIONS[args.format]
+        )
 
     output = cast("Readable", replicate.run(MODEL, input=build_input(args)))
     if output is None:
