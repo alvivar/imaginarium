@@ -1,12 +1,12 @@
-# TTS steering guide
+# Inworld TTS steering guide
 
-How to write the `text` argument for `tts.py` to control _how_ a voice performs,
+How to write the `text` argument for `inworld_tts.py` to control _how_ a voice performs,
 not just what it says. Everything here is driven by the text you pass — no extra
 flags. The underlying model is `inworld/realtime-tts-2` (`inworld-tts-2`), which
 fully supports steering.
 
 ```bash
-python tts.py "[say excitedly with a high pitch and fast pace] We shipped it!"
+python inworld_tts.py "[say excitedly with a high pitch and fast pace] We shipped it!"
 ```
 
 ## How steering works
@@ -108,7 +108,7 @@ _Avoid:_ `[say in a low tone] I can't believe this happened. [say in a high pitc
 
 ## Languages
 
-`tts.py --language` accepts `auto` (detect from the text) or one of these codes:
+`inworld_tts.py --language` accepts `auto` (detect from the text) or one of these codes:
 
 ```
 en  zh  ja  ko  ru  it  es  pt  fr  de  pl  nl  hi  he  ar
@@ -116,8 +116,8 @@ en  zh  ja  ko  ru  it  es  pt  fr  de  pl  nl  hi  he  ar
 
 > **Note — Replicate limitation.** `inworld-tts-2` natively supports 200+
 > BCP-47 languages and locales (e.g. `es-MX`, `en-GB`, `pt-BR`), but the
-> Replicate endpoint this tool calls hard-restricts `language` to the 16 codes
-> above. Passing anything else is rejected server-side with a `422`. Regional
+> Replicate endpoint this tool calls hard-restricts `language` to `auto` plus
+> the 15 codes above. Passing anything else is rejected server-side with a `422`. Regional
 > locales require Inworld's own API, not this Replicate wrapper.
 
 Setting `--language` does two things: applies text normalization for that
@@ -136,23 +136,23 @@ localize the voice in the Inworld portal.
 
 ```bash
 # Joyful announcement
-python tts.py "[say excitedly with a high pitch and fast pace] Your package has arrived!"
+python inworld_tts.py "[say excitedly with a high pitch and fast pace] Your package has arrived!"
 
 # Grave, grief-stricken
-python tts.py "[slow and hushed with every word weighted by grief] I got the call this morning."
+python inworld_tts.py "[slow and hushed with every word weighted by grief] I got the call this morning."
 
 # Intimate whisper
-python tts.py "[whisper in a hushed style] Don't make a sound. There's someone right outside." --voice Ashley
+python inworld_tts.py "[whisper in a hushed style] Don't make a sound. There's someone right outside." --voice Ashley
 
 # Technical narration (measured, clear)
-python tts.py "[very slow with deliberate pauses and clear articulation] Step one. Run the installer as root."
+python inworld_tts.py "[very slow with deliberate pauses and clear articulation] Step one. Run the installer as root."
 
 # Playful, conversational
-python tts.py "So anyway, I was telling her about the trip, and she just [laugh] lost it."
+python inworld_tts.py "So anyway, I was telling her about the trip, and she just [laugh] lost it."
 
 # Non-English, English steering, native delivery
-python tts.py "[say warmly in a gentle tone] Bonjour, je suis ravi de vous rencontrer." --language fr
+python inworld_tts.py "[say warmly in a gentle tone] Bonjour, je suis ravi de vous rencontrer." --language fr
 
 # es-MX and other locales are NOT supported by the Replicate endpoint; use es
-python tts.py "[say warmly] Hola, mucho gusto en conocerte." --language es
+python inworld_tts.py "[say warmly] Hola, mucho gusto en conocerte." --language es
 ```

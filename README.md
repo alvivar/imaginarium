@@ -1,7 +1,7 @@
-# Imaginator
+# Imaginarium
 
-A small collection of command-line tools for generating and upscaling images,
-video, and speech with [Replicate](https://replicate.com) models.
+A small collection of command-line tools that generate images, video, and
+speech — and upscale images — using [Replicate](https://replicate.com) models.
 
 ## Setup
 
@@ -27,7 +27,7 @@ Generate images with `bytedance/seedream-4.5`.
 python seedream.py "a cinematic sunrise over a futuristic city"
 ```
 
-By default the image is written to `<timestamp>.jpg`
+By default the image is written to `<timestamp>.jpg` in the current directory
 (e.g. `2026-06-08_11-58-38.jpg`). Pass `-o NAME.jpg` to choose the name.
 
 Optional flags:
@@ -36,7 +36,7 @@ Optional flags:
 - `--size` — `2K`, `4K`, or `custom` (default: `2K`)
 - `--aspect-ratio` — e.g. `1:1`, `16:9` (default: `match_input_image`; ignored with `--size custom`)
 - `--width` / `--height` — 1024–4096, used only with `--size custom` (default: `2048`)
-- `--image URI` — input image for image-to-image; a local path or URL, repeatable up to 14 times
+- `--image` — input image for image-to-image; a local path or URL, repeatable up to 14 times
 - `--sequential` — let the model generate multiple related images
 - `--max-images` — 1–15, used with `--sequential` (default: `1`)
 - `--safety-checker` — enable the safety checker (off by default)
@@ -123,20 +123,20 @@ Optional flags:
 
 The input image may be a local path or a URL.
 
-### `tts.py`
+### `inworld_tts.py`
 
 Convert text to speech with `inworld/realtime-tts-2`.
 
 ```bash
-python tts.py "Hello from the imaginarium toolkit."
-python tts.py "[say excitedly] We shipped it!" --voice Dennis --format wav
+python inworld_tts.py "Hello from the imaginarium toolkit."
+python inworld_tts.py "[say excitedly] We shipped it!" --voice Dennis --format wav
 ```
 
 The text supports natural-language steering with bracketed instructions
 (e.g. `[whisper]`, `[say sadly]`), inline non-verbal tags (e.g. `[laugh]`,
 `[sigh]`), SSML `<break time="1s" />` pauses, and CAPITALS for emphasis.
-See [docs/tts-steering.md](docs/tts-steering.md) for the full guide to
-directing emotion, pacing, volume, and vocal style.
+See [docs/inworld-tts-steering.md](docs/inworld-tts-steering.md) for the full
+guide to directing emotion, pacing, volume, and vocal style.
 
 By default the audio is written to `<timestamp>.<format>` in the current
 directory. Pass `-o NAME` to choose the name.
@@ -151,3 +151,48 @@ Optional flags:
 - `--format` — `mp3`, `wav`, `ogg_opus`, or `flac` (default: `mp3`)
 - `--speaking-rate` — speed multiplier 0–1.5; `0` is normal speed (default: `0`)
 - `--text-normalization` — `auto`, `on`, or `off`; expand numbers/dates/abbreviations (default: `auto`)
+
+### `gemini_tts.py`
+
+Convert text to speech with `google/gemini-3.1-flash-tts`.
+
+```bash
+python gemini_tts.py "Hello from the imaginarium toolkit."
+python gemini_tts.py "[whispering] Welcome aboard. [laughing] Enjoy!" --voice Puck --style "say it with playful mystery"
+```
+
+The text supports inline markup tags such as `[sigh]`, `[laughing]`,
+`[whispering]`, `[shouting]`, and `[extremely fast]`. Use `--style` to describe
+the tone, pace, accent, and emotion in natural language (this maps to the
+model's `prompt` field).
+
+The audio is written to `<timestamp>.<returned-extension>` (typically `.wav`)
+in the current directory. Pass `-o NAME` to choose the name.
+
+Optional flags:
+
+- `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.<returned-extension>`, typically `.wav`)
+- `--voice` — one of 30 voices (default: `Kore`); run `--help` for the full list
+- `--style` — style/delivery instructions, the model's `prompt` field (default: `Say the following.`)
+- `--language` — a BCP-47 code (default: `en-US`); see the full list below
+
+Supported voices:
+
+`Achernar`, `Achird`, `Algenib`, `Algieba`, `Alnilam`, `Aoede`, `Autonoe`,
+`Callirrhoe`, `Charon`, `Despina`, `Enceladus`, `Erinome`, `Fenrir`, `Gacrux`,
+`Iapetus`, `Kore`, `Laomedeia`, `Leda`, `Orus`, `Pulcherrima`, `Puck`,
+`Rasalgethi`, `Sadachbia`, `Sadaltager`, `Schedar`, `Sulafat`, `Umbriel`,
+`Vindemiatrix`, `Zephyr`, `Zubenelgenubi`
+
+Supported language codes:
+
+`af-ZA`, `am-ET`, `ar-001`, `ar-EG`, `az-AZ`, `be-BY`, `bg-BG`, `bn-BD`, `ca-ES`,
+`ceb-PH`, `cmn-CN`, `cmn-tw`, `cs-CZ`, `da-DK`, `de-DE`, `el-GR`, `en-AU`,
+`en-GB`, `en-IN`, `en-US`, `es-419`, `es-ES`, `es-MX`, `et-EE`, `eu-ES`, `fa-IR`,
+`fi-FI`, `fil-PH`, `fr-CA`, `fr-FR`, `gl-ES`, `gu-IN`, `he-IL`, `hi-IN`, `hr-HR`,
+`ht-HT`, `hu-HU`, `hy-AM`, `id-ID`, `is-IS`, `it-IT`, `ja-JP`, `jv-JV`, `ka-GE`,
+`kn-IN`, `ko-KR`, `kok-IN`, `la-VA`, `lb-LU`, `lo-LA`, `lt-LT`, `lv-LV`, `mai-IN`,
+`mg-MG`, `mk-MK`, `ml-IN`, `mn-MN`, `mr-IN`, `ms-MY`, `my-MM`, `nb-NO`, `ne-NP`,
+`nl-NL`, `nn-NO`, `or-IN`, `pa-IN`, `pl-PL`, `ps-AF`, `pt-BR`, `pt-PT`, `ro-RO`,
+`ru-RU`, `sd-IN`, `si-LK`, `sk-SK`, `sl-SI`, `sq-AL`, `sr-RS`, `sv-SE`, `sw-KE`,
+`ta-IN`, `te-IN`, `th-TH`, `tr-TR`, `uk-UA`, `ur-PK`, `vi-VN`

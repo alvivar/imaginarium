@@ -38,7 +38,7 @@ TEXT_NORMALIZATION = ("auto", "on", "off")
 # Output file extension per audio format (ogg_opus lives in an .ogg container).
 EXTENSIONS = {"mp3": "mp3", "wav": "wav", "ogg_opus": "ogg", "flac": "flac"}
 
-# Steering cheat-sheet shown at the bottom of --help. See docs/tts-steering.md.
+# Steering cheat-sheet shown at the bottom of --help. See docs/inworld-tts-steering.md.
 STEERING_HELP = """\
 Steering: write instructions in English inside [brackets], before the words
 they affect. Fully supported on this model (inworld-tts-2).
@@ -55,7 +55,7 @@ they affect. Fully supported on this model (inworld-tts-2).
 Combine qualities in one tag for the most control:
   [say sadly with deliberate pauses in a low voice and hushed style]
 
-See docs/tts-steering.md for the full guide."""
+See docs/inworld-tts-steering.md for the full guide."""
 
 
 class Readable(Protocol):
