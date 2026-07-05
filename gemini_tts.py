@@ -35,14 +35,17 @@ LANGUAGE_CODES = (
 )
 MAX_TEXT_BYTES = 4000
 
-# Extra guidance shown at the bottom of --help.
+# Extra guidance shown at the bottom of --help. See docs/gemini-tts-steering.md.
 MARKUP_HELP = """\
-Markup: insert expressive tags inline in the text.
-  [sigh]  [laughing]  [whispering]  [shouting]  [extremely fast]
+Inline tags: place bracketed modifiers in the text.
+  sounds  [sigh]  [laughing]  [uhm]
+  style   [whispering]  [shouting]  [sarcasm]  [robotic]  [extremely fast]
+  pauses  [short pause]  [medium pause]  [long pause]
+  Descriptive tags too (test first): [excitedly] [singing] [asmr].
 
-Style: describe tone, pace, accent, and emotion with --style, e.g.
-  --style "say this in a calm, professional tone"
-  --style "speak with excitement and energy"
+Style (--style): set who is speaking, the scene, and the delivery, e.g.
+  --style "a documentary narrator, calm and authoritative"
+  --style "speak with infectious, high-energy enthusiasm"
 
 Voices (--voice, default Kore):
   Achernar Achird Algenib Algieba Alnilam Aoede Autonoe Callirrhoe
@@ -50,7 +53,8 @@ Voices (--voice, default Kore):
   Laomedeia Leda Orus Pulcherrima Puck Rasalgethi Sadachbia Sadaltager
   Schedar Sulafat Umbriel Vindemiatrix Zephyr Zubenelgenubi
 
-Languages: 87 BCP-47 codes (--language, default en-US). See README.md."""
+Languages: 87 BCP-47 codes (--language, default en-US).
+See docs/gemini-tts-steering.md for the full guide."""
 
 
 class AudioOutput(Protocol):

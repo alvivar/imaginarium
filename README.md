@@ -164,7 +164,9 @@ python gemini_tts.py "[whispering] Welcome aboard. [laughing] Enjoy!" --voice Pu
 The text supports inline markup tags such as `[sigh]`, `[laughing]`,
 `[whispering]`, `[shouting]`, and `[extremely fast]`. Use `--style` to describe
 the tone, pace, accent, and emotion in natural language (this maps to the
-model's `prompt` field).
+model's `prompt` field). See
+[docs/gemini-tts-steering.md](docs/gemini-tts-steering.md) for the full guide to
+style prompts, inline tags, and voice characters.
 
 The audio is written to `<timestamp>.<returned-extension>` (typically `.wav`)
 in the current directory. Pass `-o NAME` to choose the name.
