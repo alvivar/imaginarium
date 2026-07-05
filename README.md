@@ -1,7 +1,7 @@
 # Imaginator
 
-A small collection of command-line tools for generating and upscaling images
-and video with [Replicate](https://replicate.com) models.
+A small collection of command-line tools for generating and upscaling images,
+video, and speech with [Replicate](https://replicate.com) models.
 
 ## Setup
 
@@ -122,3 +122,30 @@ Optional flags:
 - `--aspect-ratio` — `auto`, `16:9`, `4:3`, `1:1`, `9:16`, `3:4`, `3:2`, or `2:3`; `auto` uses the image's native ratio (default: `auto`)
 
 The input image may be a local path or a URL.
+
+### `tts.py`
+
+Convert text to speech with `inworld/realtime-tts-2`.
+
+```bash
+python tts.py "Hello from the imaginarium toolkit."
+python tts.py "[say excitedly] We shipped it!" --voice Dennis --format wav
+```
+
+The text supports natural-language steering with bracketed instructions
+(e.g. `[whisper]`, `[say sadly]`), inline non-verbal tags (e.g. `[laugh]`,
+`[sigh]`), SSML `<break time="1s" />` pauses, and CAPITALS for emphasis.
+
+By default the audio is written to `<timestamp>.<format>` in the current
+directory. Pass `-o NAME` to choose the name.
+
+Optional flags:
+
+- `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.<format>`)
+- `--voice` — preset voice name or custom cloned voice ID (default: `Ashley`)
+- `--language` — `auto` or a language code such as `en`, `es`, `fr`, `ja` (default: `auto`)
+- `--sample-rate` — `8000`, `16000`, `22050`, `24000`, `32000`, `44100`, or `48000` Hz (default: `48000`)
+- `--temperature` — randomness 0–2; `0` uses the model default of 1.1 (default: `0`)
+- `--format` — `mp3`, `wav`, `ogg_opus`, or `flac` (default: `mp3`)
+- `--speaking-rate` — speed multiplier 0–1.5; `0` is normal speed (default: `0`)
+- `--text-normalization` — `auto`, `on`, or `off`; expand numbers/dates/abbreviations (default: `auto`)
