@@ -1,7 +1,7 @@
 # Imaginator
 
 A small collection of command-line tools for generating and upscaling images
-with [Replicate](https://replicate.com) models.
+and video with [Replicate](https://replicate.com) models.
 
 ## Setup
 
@@ -71,3 +71,33 @@ Optional flags:
 - `--safety-checker` — enable the safety checker (off by default)
 
 The input image may be a local path or a URL.
+
+### `seedance.py`
+
+Generate a video from a text prompt with `bytedance/seedance-2.0`.
+
+```bash
+python seedance.py "a cat surfing a wave at sunset"
+python seedance.py "she says \"hello\"" --image first.jpg --resolution 1080p --duration 8
+```
+
+By default the video is written to `<timestamp>.mp4` in the current directory.
+Pass `-o NAME.mp4` to choose the name.
+
+Optional flags:
+
+- `-o`, `--output` — output path (default: `<YYYY-MM-DD_HH-MM-SS>.mp4`)
+- `--seed` — random seed for reproducible generation
+- `--image` — first-frame image for image-to-video (local path or URL)
+- `--last-frame` — last-frame image; requires `--image` (local path or URL)
+- `--duration` — seconds, -1 to 15; `-1` lets the model choose (default: `5`)
+- `--resolution` — `480p`, `720p`, `1080p`, or `4k` (default: `720p`)
+- `--aspect-ratio` — `16:9`, `4:3`, `1:1`, `3:4`, `9:16`, `21:9`, `9:21`, or `adaptive` (default: `16:9`)
+- `--no-audio` — disable synchronized audio generation (on by default)
+- `--reference-image` — reference image for character/style, repeatable up to 9
+- `--reference-video` — reference video for motion/style, repeatable up to 3
+- `--reference-audio` — reference audio for lip-sync, repeatable up to 3
+
+Reference images/videos cannot be combined with `--image`/`--last-frame`, and
+reference audio requires at least one reference image or video. All media
+inputs may be local paths or URLs.
